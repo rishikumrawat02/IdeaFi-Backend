@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    username:{
+    userName:{
         type: String,
         required: true
     },
@@ -30,6 +30,10 @@ const userSchema = mongoose.Schema({
 const User = mongoose.model('User',userSchema);
 
 const userProgressSchema = mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     patentInfo:{
         levels:[{
             name:{
@@ -95,7 +99,7 @@ const userProgressSchema = mongoose.Schema({
         }]
     },
     pointsDetail:[{
-        type: Number,
+        points: Number,
         dateModified: mongoose.Schema.Types.Date
     }]
 });
