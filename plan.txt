@@ -1,0 +1,11 @@
+                                                            || ॐ श्री गणेशाय नमः ॐ ||
+
+API's to create:
+1) Post API for adding new user
+2) Get API for getting information of old user
+3) Post API for adding new point of the user
+4) Get API for daily points, weekly points, monthly points and current user ( overall performance + dail,weekly,montly points)
+
+Step-1 Setting Database Connection with mongo cloud
+Step-2 Creating Schema for each objects(Trademark, Copyright, Patent, Design, User);
+Step-3 Creating API's
