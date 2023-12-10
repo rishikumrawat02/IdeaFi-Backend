@@ -9,3 +9,5 @@ API's to create:
 Step-1 Setting Database Connection with mongo cloud
 Step-2 Creating Schema for each objects(Trademark, Copyright, Patent, Design, User);
 Step-3 Creating API's
+Step-4 Create a User Progress API to get User Progress
+Create api for each module levelname and maxpoints
