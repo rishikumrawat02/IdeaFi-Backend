@@ -30,7 +30,7 @@ const trademarkSchema = mongoose.Schema({
                     },
                     ans: {
                         type: String,
-                        enum: [true, false]
+                        enum: ["True","False"]
                     },
                     points:{
                         type: Number,

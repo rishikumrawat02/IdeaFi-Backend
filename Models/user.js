@@ -36,10 +36,6 @@ const userProgressSchema = mongoose.Schema({
     },
     patentInfo:{
         levels:[{
-            name:{
-                type: String,
-                required: true
-            },
             status:{
                 type: String,
                 enum: ['Completed','Incomplete']
@@ -52,10 +48,6 @@ const userProgressSchema = mongoose.Schema({
     },
     trademarkInfo:{
         levels:[{
-            name:{
-                type: String,
-                required: true
-            },
             status:{
                 type: String,
                 enum: ['Completed','Incomplete']
@@ -68,10 +60,6 @@ const userProgressSchema = mongoose.Schema({
     },
     copyrightInfo:{
         levels:[{
-            name:{
-                type: String,
-                required: true
-            },
             status:{
                 type: String,
                 enum: ['Completed','Incomplete']
@@ -84,10 +72,6 @@ const userProgressSchema = mongoose.Schema({
     },
     designInfo:{
         levels:[{
-            name:{
-                type: String,
-                required: true
-            },
             status:{
                 type: String,
                 enum: ['Completed','Incomplete']
