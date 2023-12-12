@@ -46,7 +46,8 @@ function pointsAndLeaderBoardController() {
                 },
                 {
                     $project: {
-                        _id: 1,
+                        _id: 0,
+                        userId: "$user.userId",
                         totalPoints: 1,
                         userName: "$user.userName" // Replace "userName" with the actual field in your User model
                     }
