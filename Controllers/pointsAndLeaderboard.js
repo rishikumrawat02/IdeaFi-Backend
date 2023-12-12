@@ -4,19 +4,24 @@ const [User, UserProgress] = require('../Models/user');
 function pointsAndLeaderBoardController() {
     return {
         getRanks: async (req, res) => {
-            const userId = req.body.userId;
+            let userId = new mongoose.Types.ObjectId(req.body.userId);
             const rankBasis = req.body.rankBasis;
 
-            let xDaysAgo = Date.now() - 1 * 24 * 60 * 60 * 1000;
+            const currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() - 1);
 
             if (rankBasis === 'W') {
-                xDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+                currentDate.setDate(currentDate.getDate() - 7);
             } else if (rankBasis == 'M') {
-                xDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+                currentDate.setDate(currentDate.getDate() - 30);
             }
 
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const day = currentDate.getDate();
+
             const query = {
-                "pointsDetail.dateModified": { $gte: xDaysAgo }
+                "pointsDetail.dateModified": { $gte: new Date(year, month, day) }
             };
 
             const aggregate = [
@@ -33,24 +38,27 @@ function pointsAndLeaderBoardController() {
                 },
                 {
                     $lookup: {
-                        from: "User",
-                        localField: "userId",
-                        foreignField: "userId",
+                        from: "users", // Assuming your User model is in the "users" collection
+                        localField: "_id", // The field from the current collection
+                        foreignField: "_id", // The field from the "users" collection
                         as: "user"
                     }
                 },
                 {
                     $project: {
-                        userId: 1,
+                        _id: 1,
                         totalPoints: 1,
-                        userName: 1
+                        userName: "$user.userName" // Replace "userName" with the actual field in your User model
                     }
                 }
             ];
+            
 
             try {
                 let userPointsData = await UserProgress.aggregate(aggregate);
-                userPointsData = userPointsData.slice(0, 50);
+                if (userPointsData.length > 50) {
+                    userPointsData = userPointsData.slice(0, 50);
+                }
 
                 const userIndex = userPointsData.findIndex(user => user.userId === userId);
 

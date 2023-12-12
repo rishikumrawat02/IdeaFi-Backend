@@ -28,6 +28,9 @@ function initRoutes(app) {
     // Add points of the user
     app.post('/ideafibackend/user/addPoints/:section/:level',pointsController().addPoints);
 
+    // Get ranks
+    app.get('/ideafibackend/rank/getRanks',pointsController().getRanks);
+
 }
 
 module.exports = initRoutes;
