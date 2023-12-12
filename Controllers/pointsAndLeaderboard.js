@@ -1,10 +1,12 @@
 const { default: mongoose } = require('mongoose');
 const [User, UserProgress] = require('../Models/user');
 
+
 function pointsAndLeaderBoardController() {
     return {
         getRanks: async (req, res) => {
-            let userId = new mongoose.Types.ObjectId(req.body.userId);
+            const uid = req.body.userId;
+
             const rankBasis = req.body.rankBasis;
 
             const currentDate = new Date();
@@ -57,11 +59,16 @@ function pointsAndLeaderBoardController() {
 
             try {
                 let userPointsData = await UserProgress.aggregate(aggregate);
+                const userIndex = userPointsData.findIndex(user => user.userId[0] === uid);
+
                 if (userPointsData.length > 50) {
                     userPointsData = userPointsData.slice(0, 50);
                 }
 
-                const userIndex = userPointsData.findIndex(user => user.userId === userId);
+                console.log(userIndex);
+                console.log(userPointsData);
+
+                
 
                 return res.status(200).json({
                     top50UserInfo: userPointsData, userRankandInfo: {
