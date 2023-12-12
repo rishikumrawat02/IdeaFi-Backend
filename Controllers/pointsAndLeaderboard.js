@@ -154,20 +154,32 @@ function pointsAndLeaderBoardController() {
         },
 
         streakComplete: async (req, res) => {
-            const userId = req.body.userId;
+            let userId = req.body.userId;
             try {
-                const user = await User.find({ userId: userId });
+                const user = await User.findOne({ userId: userId });
                 if (!user) {
                     return res.status(404).json({ msg: 'Invalid User Id' });
                 }
-                const uid = user._id;
-                let userProgress = await UserProgress.find({ userId: uid });
 
+                const uid = user._id;
+                let userProgress = await UserProgress.findOne({ userId: uid });
+                
                 const today = new Date();
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
 
-                const lastModifiedDate = userProgress.streakInfo.lastModified;
+                if (!userProgress.streakInfo) {
+                    userProgress.streakInfo = {
+                        longest: 0,
+                        current: 0,
+                        lastModified: yesterday,
+                    };
+
+                    userProgress = await userProgress.save();
+                }
+                
+
+                const lastModifiedDate = userProgress.streakInfo.lastModified || yesterday;
 
                 if (lastModifiedDate.getDate() == today.getDate() && lastModifiedDate.getMonth() == today.getMonth() && lastModifiedDate.getFullYear() == today.getFullYear()) {
                     return res.status(200).json({ msg: 'Already updated streak' });
@@ -177,7 +189,7 @@ function pointsAndLeaderBoardController() {
                 ) {
                     userProgress.streakInfo.current = 1;
                 } else {
-                    userProgress.streakInfo.current +=1;
+                    userProgress.streakInfo.current += 1;
                 }
 
                 userProgress.streakInfo.longest = Math.max(
@@ -193,7 +205,7 @@ function pointsAndLeaderBoardController() {
             } catch (error) {
                 console.error('Error while completing streak:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
-            }
+            } 
         }
     }
 }
