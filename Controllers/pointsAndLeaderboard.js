@@ -55,7 +55,7 @@ function pointsAndLeaderBoardController() {
                     }
                 }
             ];
-            
+
 
             try {
                 let userPointsData = await UserProgress.aggregate(aggregate);
@@ -67,8 +67,6 @@ function pointsAndLeaderBoardController() {
 
                 console.log(userIndex);
                 console.log(userPointsData);
-
-                
 
                 return res.status(200).json({
                     top50UserInfo: userPointsData, userRankandInfo: {
@@ -151,6 +149,49 @@ function pointsAndLeaderBoardController() {
 
             } catch (error) {
                 console.error(error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
+        },
+
+        streakComplete: async (req, res) => {
+            const userId = req.body.userId;
+            try {
+                const user = await User.find({ userId: userId });
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
+                const uid = user._id;
+                let userProgress = await UserProgress.find({ userId: uid });
+
+                const today = new Date();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+
+                const lastModifiedDate = userProgress.streakInfo.lastModified;
+
+                if (lastModifiedDate.getDate() == today.getDate() && lastModifiedDate.getMonth() == today.getMonth() && lastModifiedDate.getFullYear() == today.getFullYear()) {
+                    return res.status(200).json({ msg: 'Already updated streak' });
+                }
+
+                if (lastModifiedDate.getDate() !== yesterday.getDate() || lastModifiedDate.getMonth() !== yesterday.getMonth() || lastModifiedDate.getFullYear() !== yesterday.getFullYear()
+                ) {
+                    userProgress.streakInfo.current = 1;
+                } else {
+                    userProgress.streakInfo.current +=1;
+                }
+
+                userProgress.streakInfo.longest = Math.max(
+                    userProgress.streakInfo.longest,
+                    userProgress.streakInfo.current
+                );
+
+                userProgress.streakInfo.lastModified = today;
+
+                await userProgress.save();
+                return res.status(200).json({ msg: 'User streak updated ', streakData: { curreStreak: userProgress.streakInfo.current, longestStreak: userProgress.streakInfo.longest } });
+
+            } catch (error) {
+                console.error('Error while completing streak:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
         }

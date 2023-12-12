@@ -80,12 +80,21 @@ function userController() {
 };
 
 async function creatUserProgress(userId) {
-    const userProgressObj = { userId: userId , pointsEarned: 0};
+    const userProgressObj = { userId: userId, pointsEarned: 0 };
 
     userProgressObj.patentInfo = { levels: await createLevel(PatentModel) };
     userProgressObj.trademarkInfo = { levels: await createLevel(TradeMarkModel) };
     userProgressObj.copyrightInfo = { levels: await createLevel(CopyRightModel) };
     userProgressObj.designInfo = { levels: await createLevel(DesignModel) };
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    userProgressObj.streakInfo = {
+        longest: 0,
+        current: 0,
+        lastModified: yesterday
+    }
 
     return userProgressObj;
 }

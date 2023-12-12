@@ -85,7 +85,20 @@ const userProgressSchema = mongoose.Schema({
     pointsDetail:[{
         points: Number,
         dateModified: mongoose.Schema.Types.Date
-    }]
+    }],
+    streakInfo:{
+        longest:{
+            type: Number,
+            default: 0
+        },
+        current:{
+            type: Number,
+            default: 0
+        },
+        lastModified: {
+            type: mongoose.Schema.Types.Date,
+        }
+    },
 });
 
 const UserProgress = mongoose.model("UserPrgoress",userProgressSchema);
