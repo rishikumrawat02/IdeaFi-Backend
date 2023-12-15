@@ -28,7 +28,7 @@ function dataController() {
                         ans: tF.ans,
                         points: tF.points
                     }));
-                    maxScore += newObj.trueFalse.reduce((acc, tF) => acc + tF.points, 0);
+                    maxScore += newObj.trueFalse.reduce((acc, tF) => acc + Number(tF.points), 0);
                 }
 
                 // Adding Text-MCQ question
@@ -39,7 +39,7 @@ function dataController() {
                         answer: tM.answer,
                         points: tM.points
                     }));
-                    maxScore += newObj.txtmcq.reduce((acc, tM) => acc + tM.points, 0);
+                    maxScore += newObj.txtmcq.reduce((acc, tM) => acc + Number(tM.points), 0);
                 }
 
                 // Addimg Img-MCQ question
@@ -50,7 +50,7 @@ function dataController() {
                         answerLink: IM.answerLink,
                         points: IM.points
                     }));
-                    maxScore += newObj.imgmcq.reduce((acc, IM) => acc + IM.points, 0);
+                    maxScore += newObj.imgmcq.reduce((acc, IM) => acc + Number(IM.points), 0);
                 }
 
                 newObject.content.push(newObj);

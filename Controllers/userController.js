@@ -50,7 +50,7 @@ function userController() {
         getUserInfo: async (req, res) => {
             const userId = req.body.userId;
             try {
-                const data = await User.find({ userId: userId });
+                const data = await User.findOne({ userId: userId });
                 if (!data) {
                     return res.status(404).json({ msg: 'User not found' });
                 }
