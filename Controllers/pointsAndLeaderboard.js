@@ -163,7 +163,7 @@ function pointsAndLeaderBoardController() {
 
                 const uid = user._id;
                 let userProgress = await UserProgress.findOne({ userId: uid });
-                
+
                 const today = new Date();
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
@@ -177,7 +177,7 @@ function pointsAndLeaderBoardController() {
 
                     userProgress = await userProgress.save();
                 }
-                
+
 
                 const lastModifiedDate = userProgress.streakInfo.lastModified || yesterday;
 
@@ -205,7 +205,87 @@ function pointsAndLeaderBoardController() {
             } catch (error) {
                 console.error('Error while completing streak:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
-            } 
+            }
+        },
+
+        addStatics: async (req, res) => {
+            const userId = req.body.userId;
+            const { timeSpent, correctAns, wrongAns } = req.body; // Use object destructuring directly for the userId
+            try {
+                const user = await User.findOne({ userId: userId });
+
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
+
+                let userProgress = await UserProgress.findOne({ userId: user._id });
+
+                if (!userProgress) {
+                    return res.status(404).json({ msg: 'UserProgress Not Found' });
+                }
+
+                if (!userProgress.statics) {
+                    userProgress.statics = {
+                        timeSpent: 0,
+                        correctAns: 0,
+                        wrongAns: 0,
+                    };
+                }
+
+                if (timeSpent) {
+                    userProgress.statics.timeSpent += timeSpent;
+                }
+
+                if (correctAns) {
+                    userProgress.statics.correctAns += correctAns;
+                }
+
+                if (wrongAns) {
+                    userProgress.statics.wrongAns += wrongAns;
+                }
+
+                await userProgress.save();
+
+                return res.status(200).json({ msg: 'Statistics Updated Successfully' });
+
+            } catch (error) {
+                console.error('Error while adding user statistics:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
+        },
+
+        addBadges: async (req, res) => {
+            let userId = req.body.userId;
+            const badgeId = req.body.badgeId;
+
+            try {
+                const user = await User.findOne({ userId: userId });
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
+
+                let userProgress = await UserProgress.findOne({ userId: user._id });
+                if (!userProgress) {
+                    return res.status(404).json({ msg: 'UserProgress Not Found' });
+                }
+
+                if (!userProgress.badges) {
+                    userProgress.badges = [];
+                }
+
+                const idx = userProgress.badges.indexOf(badgeId);
+
+                if (idx === -1) {
+                    userProgress.badges.push(badgeId);
+                }
+
+                await userProgress.save();
+
+                return res.status(200).json({ msg: 'Successfully Added Badge' });
+            } catch (error) {
+                console.error('Error while adding badge:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
         }
     }
 }

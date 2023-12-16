@@ -94,7 +94,15 @@ async function creatUserProgress(userId) {
         longest: 0,
         current: 0,
         lastModified: yesterday
-    }
+    };
+
+    userProgressObj.statics = {
+        timeSpent: 0,
+        correctAns: 0,
+        wrongAns: 0
+    };
+
+    userProgressObj.badges = [];
 
     return userProgressObj;
 }

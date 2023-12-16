@@ -1,97 +1,97 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
-    userId:{
+    userId: {
         type: String,
         required: true,
         unique: true
     },
-    userName:{
+    userName: {
         type: String,
         required: true
     },
-    age:{
+    age: {
         type: Number,
-        min:0,
-        max:100,
+        min: 0,
+        max: 100,
         required: true
     },
-    email:{
+    email: {
         type: String,
         unique: true,
         required: true
     },
-    diceCode:{
+    diceCode: {
         type: String,
         default: null
     }
 });
 
-const User = mongoose.model('User',userSchema);
+const User = mongoose.model('User', userSchema);
 
 const userProgressSchema = mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    patentInfo:{
-        levels:[{
-            status:{
+    patentInfo: {
+        levels: [{
+            status: {
                 type: String,
-                enum: ['Completed','Incomplete']
+                enum: ['Completed', 'Incomplete']
             },
-            pointsEarned:{
+            pointsEarned: {
                 type: Number,
                 default: 0
             }
         }]
     },
-    trademarkInfo:{
-        levels:[{
-            status:{
+    trademarkInfo: {
+        levels: [{
+            status: {
                 type: String,
-                enum: ['Completed','Incomplete']
+                enum: ['Completed', 'Incomplete']
             },
-            pointsEarned:{
+            pointsEarned: {
                 type: Number,
                 default: 0
             }
         }]
     },
-    copyrightInfo:{
-        levels:[{
-            status:{
+    copyrightInfo: {
+        levels: [{
+            status: {
                 type: String,
-                enum: ['Completed','Incomplete']
+                enum: ['Completed', 'Incomplete']
             },
-            pointsEarned:{
+            pointsEarned: {
                 type: Number,
                 default: 0
             }
         }]
     },
-    designInfo:{
-        levels:[{
-            status:{
+    designInfo: {
+        levels: [{
+            status: {
                 type: String,
-                enum: ['Completed','Incomplete']
+                enum: ['Completed', 'Incomplete']
             },
-            pointsEarned:{
+            pointsEarned: {
                 type: Number,
                 default: 0
             }
         }]
     },
-    pointsDetail:[{
+    pointsDetail: [{
         points: Number,
         dateModified: mongoose.Schema.Types.Date
     }],
-    streakInfo:{
-        longest:{
+    streakInfo: {
+        longest: {
             type: Number,
             default: 0
         },
-        current:{
+        current: {
             type: Number,
             default: 0
         },
@@ -99,8 +99,23 @@ const userProgressSchema = mongoose.Schema({
             type: mongoose.Schema.Types.Date,
         }
     },
+    statics: {
+        timeSpent: {
+            type: Number,
+            default: 0
+        },
+        correctAns: {
+            type: Number,
+            default: 0
+        },
+        wrongAns: {
+            type: Number,
+            default: 0
+        }
+    },
+    badges: [String]
 });
 
-const UserProgress = mongoose.model("UserPrgoress",userProgressSchema);
+const UserProgress = mongoose.model("UserPrgoress", userProgressSchema);
 
-module.exports = [User,UserProgress];
+module.exports = [User, UserProgress];

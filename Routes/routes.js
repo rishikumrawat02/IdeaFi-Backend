@@ -31,9 +31,14 @@ function initRoutes(app) {
     // Get ranks
     app.get('/ideafibackend/rank/getRanks',pointsController().getRanks);
 
-
     // Add Streak
     app.post('/ideafibackend/user/streakComplete',pointsController().streakComplete);
+
+    // Statics 
+    app.post('/ideafibackend/user/addStatics',pointsController().addStatics);
+
+    // Badges
+    app.post('/ideafibackend/user/addBadges',pointsController().addBadges);
 }
 
 module.exports = initRoutes;
