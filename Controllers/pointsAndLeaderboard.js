@@ -1,5 +1,7 @@
 const { default: mongoose } = require('mongoose');
 const [User, UserProgress] = require('../Models/user');
+const generatePDF = require('./pdfLogic');
+const pdfModel = require('../Models/pdfModel');
 
 
 function pointsAndLeaderBoardController() {
@@ -286,9 +288,79 @@ function pointsAndLeaderBoardController() {
                 console.error('Error while adding badge:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
+        },
+
+        certificationComplete: async (req, res) => {
+            const userId = req.body.userId;
+
+            try {
+                const user = await User.findOne({ userId: userId });
+
+                if (!user) {
+                    return res.status(404).json({ error: 'User not found with the provided Id' });
+                }
+
+                const exist = await pdfModel.findOne({ userId: userId });
+                if (exist) {
+                    return res.status(200).json({ msg: 'Certification Already Done' });
+                }
+
+                const pdfBuffer = await generatePDF(user.userName);
+
+                const pdfData = pdfBuffer.toString('base64');
+
+                // Save the PDF data along with other information to MongoDB
+                await pdfModel.create({
+                    userId: userId,
+                    pdfData: pdfData,
+                });
+
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=certificate.pdf');
+
+                // Send the PDF as the response
+                return res.status(200).send(pdfBuffer);
+            } catch (error) {
+                console.error('Error while generating certificate:', error);
+                return res.status(500).json({ error: 'Internal Server Error' });
+            }
+        },
+
+        getCertificate: async (req, res) => {
+            const userId = req.body.userId;
+            const pdfBuffer = await getPdfFromMongoDB(userId);
+            if (!pdfBuffer) {
+                return res.status(404).json({ msg: 'Invalid userId or User not completed certification' });
+            }
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=certificate.pdf');
+
+            // Send the PDF as the response
+            return res.status(200).send(pdfBuffer);
         }
     }
 }
+
+async function getPdfFromMongoDB(userId) {
+    try {
+        // Find the document by userName
+        const pdfDocument = await pdfModel.findOne({ userId: userId });
+
+        if (!pdfDocument) {
+            console.log('PDF not found in MongoDB for userName:', userName);
+            return null;
+        }
+
+        // Convert base64 string back to buffer
+        const pdfBuffer = Buffer.from(pdfDocument.pdfData, 'base64');
+
+        return pdfBuffer;
+    } catch (error) {
+        console.error('Error while retrieving PDF from MongoDB:', error);
+        return null;
+    }
+}
+
 
 const areDatesEqual = (date1, date2) => {
     const isSameYear = date1.getFullYear() === date2.getFullYear();
