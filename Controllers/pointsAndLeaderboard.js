@@ -312,11 +312,11 @@ function pointsAndLeaderBoardController() {
                     pdfData: pdfData,
                 });
 
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content-Disposition', 'attachment; filename=certificate.pdf');
+                // res.setHeader('Content-Type', 'application/pdf');
+                // res.setHeader('Content-Disposition', 'attachment; filename=certificate.pdf');
 
                 // Send the PDF as the response
-                return res.status(200).send(pdfBuffer);
+                return res.status(200).json({msg: 'Certification Done'});
             } catch (error) {
                 console.error('Error while generating certificate:', error);
                 return res.status(500).json({ error: 'Internal Server Error' });

@@ -7,7 +7,7 @@ const LOGO_IMAGE_PATH = `https://firebasestorage.googleapis.com/v0/b/ideafi-374e
 
 const SIGNATURE_IMAGE_PATH = `https://firebasestorage.googleapis.com/v0/b/ideafi-374e1.appspot.com/o/WhatsApp%20Image%202023-12-18%20at%2018.23.56_1a3c1b91.jpg?alt=media&token=38186dc2-0520-4b44-a334-c259f29afeb3`;
 
-const QR_IMAGE_PATH = `https://firebasestorage.googleapis.com/v0/b/ideafi-374e1.appspot.com/o/WhatsApp%20Image%202023-12-18%20at%2018.23.56_1a3c1b91.jpg?alt=media&token=38186dc2-0520-4b44-a334-c259f29afeb3`;
+const QR_IMAGE_PATH = `https://firebasestorage.googleapis.com/v0/b/ideafi-374e1.appspot.com/o/WhatsApp%20Image%202023-12-18%20at%2021.23.57_99143f0d.jpg?alt=media&token=8625a91b-e759-4b18-b6cc-a2dcee85615b`
 
 function jumpLine(doc, lines) {
     for (let index = 0; index < lines; index++) {
@@ -15,7 +15,19 @@ function jumpLine(doc, lines) {
     }
 }
 
-async function generateCertificate(userName, certNum, date) {
+function generateFormattedDate() {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const currentDate = new Date().toLocaleDateString('en-US', options);
+    return currentDate;
+}
+
+// Function to generate a random serial code
+function generateRandomSerialCode() {
+    const randomCode = Math.floor(100000 + Math.random() * 900000);
+    return randomCode;
+}
+
+async function generateCertificate(userName) {
     const doc = new PDFDocument({
         layout: 'landscape',
         size: 'A4',
@@ -39,8 +51,6 @@ async function generateCertificate(userName, certNum, date) {
         .stroke();
 
 
-
-
     // Header
     const maxWidth = 140;
     const maxHeight = 70;
@@ -48,7 +58,7 @@ async function generateCertificate(userName, certNum, date) {
     const logo = await fetchImage(LOGO_IMAGE_PATH);
     doc.image(logo, doc.page.width / 2 - maxWidth / 2, 60, {
         fit: [maxWidth, maxHeight],
-        align: 'center',
+        align: 'center'
     });
 
     jumpLine(doc, 5);
@@ -125,7 +135,7 @@ async function generateCertificate(userName, certNum, date) {
     const sign = await fetchImage(SIGNATURE_IMAGE_PATH);
     doc.image(sign, signatureImagePosition.x, signatureImagePosition.y, {
         fit: [signatureImageSize, signatureImageSize],
-        align: 'center',
+        align: 'center'
     });
 
     doc
@@ -135,8 +145,7 @@ async function generateCertificate(userName, certNum, date) {
             columns: 1,
             columnGap: 0,
             height: 40,
-            width: lineSize,
-            align: 'center',
+            width: lineSize
         });
 
     doc
@@ -147,13 +156,12 @@ async function generateCertificate(userName, certNum, date) {
             columnGap: 0,
             height: 40,
             width: lineSize,
-            align: 'center',
         });
 
     jumpLine(doc, 4);
 
     // Certificate No
-    const certCont = `Certificate No: ${certNum}`;
+    const certCont = `Certificate No: ${generateRandomSerialCode()}`;
     const certWidth = doc.widthOfString(certCont);
     const certHeight = doc.currentLineHeight();
 
@@ -170,7 +178,7 @@ async function generateCertificate(userName, certNum, date) {
     jumpLine(doc, 4);
 
     // Issue Date
-    const issueDate = `Issue Date: ${date}`;
+    const issueDate = `Issue Date: ${generateFormattedDate()}`;
     const dateWidth = doc.widthOfString(issueDate);
     doc
         .fontSize(10)
