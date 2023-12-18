@@ -34,6 +34,18 @@ const userProgressSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    ipInfo: {
+        levels: [{
+            status: {
+                type: String,
+                enum: ['Completed', 'Incomplete']
+            },
+            pointsEarned: {
+                type: Number,
+                default: 0
+            }
+        }]
+    },
     patentInfo: {
         levels: [{
             status: {

@@ -4,6 +4,7 @@ const TradeMarkModel = require('../Models/trademark');
 const CopyRightModel = require('../Models/copyright');
 const DesignModel = require('../Models/design');
 const mongoose = require('mongoose');
+const IPModel = require('../Models/basicIP');
 
 function userController() {
     return {
@@ -63,10 +64,14 @@ function userController() {
         },
 
         getUserProgress: async (req, res) => {
-            const userId = new mongoose.Types.ObjectId(req.body.userId);
-
+            const userId = req.body.userId;
+            
             try {
-                const data = await UserProgress.find({ userId: userId });
+                const user = await User.findOne({ userId: userId });
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
+                const data = await UserProgress.find({ userId: user._id });
                 if (!data) {
                     return res.status(404).json({ msg: 'User Not Found' });
                 }
@@ -81,7 +86,7 @@ function userController() {
 
 async function creatUserProgress(userId) {
     const userProgressObj = { userId: userId, pointsEarned: 0 };
-
+    userProgressObj.ipInfo = { levels: await createLevel(IPModel) };
     userProgressObj.patentInfo = { levels: await createLevel(PatentModel) };
     userProgressObj.trademarkInfo = { levels: await createLevel(TradeMarkModel) };
     userProgressObj.copyrightInfo = { levels: await createLevel(CopyRightModel) };
@@ -109,13 +114,23 @@ async function creatUserProgress(userId) {
 
 async function createLevel(model) {
     try {
-        const data = await model.find();
-        const size = data[0].levels.length;
-        return Array.from({ length: size }, () => ({ status: 'Incomplete', pointsEarned: 0 }));
+        // const data = await model.find();
+        // const size = data[0].levels.length;
+        return Array.from({ length: 3 }, () => ({ status: 'Incomplete', pointsEarned: 0 }));
     } catch (error) {
         console.error('Error creating level:', error);
         return;
     }
 }
+
+async function done(){
+    const id = new mongoose.Types.ObjectId('6580132b1e46a4600438bace');
+    let userProgress = await UserProgress.findOne({userId: id });
+    userProgress.ipInfo = { levels: await createLevel(IPModel) };
+    await userProgress.save();
+    console.log("Done");
+}
+
+done();
 
 module.exports = userController;
