@@ -67,9 +67,6 @@ function pointsAndLeaderBoardController() {
                     userPointsData = userPointsData.slice(0, 50);
                 }
 
-                console.log(userIndex);
-                console.log(userPointsData);
-
                 return res.status(200).json({
                     top50UserInfo: userPointsData, userRankandInfo: {
                         currentUserinfo: userPointsData[userIndex], rank: userIndex + 1
