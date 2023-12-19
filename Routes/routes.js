@@ -51,6 +51,7 @@ function initRoutes(app) {
     app.get('/ideafibackend/user/getUserModuleProgress', userController().getUserModuleProgress);
 
     // Streak Logic
+    app.get('/ideafibackend/user/getStreakInfo', userController().getStreakInfo);
     app.post('/ideafibackend/addData/streakData', dataController().addStreakData);
     app.get('/ideafibackend/getData/streakData', dataController().getStreakData);
 }

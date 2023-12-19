@@ -246,9 +246,6 @@ function dataController() {
 
         addStreakData: async (req, res) => {
             const obj = {};
-            if (req.body.trueFalse) {
-                obj.trueFalse = req.body.trueFalse;
-            }
             if (req.body.txtmcq) {
                 obj.txtmcq = req.body.txtmcq;
             }

@@ -101,6 +101,46 @@ function userController() {
                 console.error('Error while geting user progress:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
+        },
+
+        getStreakInfo: async (req, res) => {
+            const userId = req.body.userId;
+
+            try {
+                const user = await User.findOne({ userId: userId });
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
+                let data = await UserProgress.findOne({ userId: user._id });
+                if (!data) {
+                    return res.status(404).json({ msg: 'User Not Found' });
+                }
+
+                data = data.streakInfo;
+
+                const streakInfo = {};
+                streakInfo.currentStreak = data.current;
+                streakInfo.longestStreak = data.longest;
+                streakInfo.isDone = false;
+
+                // Get the current date without the time
+                const currentDate = new Date();
+                currentDate.setHours(0, 0, 0, 0);
+
+                // Get the last modified date without the time
+                const lastModifiedDate = new Date(streakInfo.lastModified);
+                lastModifiedDate.setHours(0, 0, 0, 0);
+
+                // Compare the dates
+                if (lastModifiedDate.getTime() === currentDate.getTime()) {
+                    streakInfo.isDone = true;
+                }
+
+                return res.status(200).json({ streakInfo });
+            } catch (error) {
+                console.error('Error while geting user progress:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
         }
     }
 };
