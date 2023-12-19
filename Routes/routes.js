@@ -41,6 +41,7 @@ function initRoutes(app) {
 
     // Badges
     app.post('/ideafibackend/user/addBadges', pointsController().addBadges);
+    app.get('/ideafibackend/user/getBadges', pointsController().getBadges);
 
     // Certification
     app.post('/ideafibackend/user/certification', pointsController().certificationComplete);

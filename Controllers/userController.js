@@ -92,11 +92,11 @@ function userController() {
                 if (!user) {
                     return res.status(404).json({ msg: 'Invalid User Id' });
                 }
-                const data = await UserProgress.find({ userId: user._id });
+                const data = await UserProgress.findOne({ userId: user._id });
                 if (!data) {
                     return res.status(404).json({ msg: 'User Not Found' });
                 }
-                return res.status(200).json({ data: data[0] });
+                return res.status(200).json({ data: data });
             } catch (error) {
                 console.error('Error while geting user progress:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });

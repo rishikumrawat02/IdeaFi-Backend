@@ -287,6 +287,24 @@ function pointsAndLeaderBoardController() {
             }
         },
 
+        getBadges: async (req, res) => {
+            const userId = req.body.userId;
+            try {
+                const user = await User.findOne({ userId: userId });
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
+                const data = await UserProgress.findOne({ userId: user._id });
+                if (!data) {
+                    return res.status(404).json({ msg: 'User Not Found' });
+                }
+                return res.status(200).json({ badges: data.badges });
+            } catch (error) {
+                console.error('Error while geting user progress:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
+        },
+
         certificationComplete: async (req, res) => {
             const userId = req.body.userId;
 
@@ -316,7 +334,7 @@ function pointsAndLeaderBoardController() {
                 // res.setHeader('Content-Disposition', 'attachment; filename=certificate.pdf');
 
                 // Send the PDF as the response
-                return res.status(200).json({msg: 'Certification Done'});
+                return res.status(200).json({ msg: 'Certification Done' });
             } catch (error) {
                 console.error('Error while generating certificate:', error);
                 return res.status(500).json({ error: 'Internal Server Error' });
