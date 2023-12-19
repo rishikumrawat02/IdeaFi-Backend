@@ -4,7 +4,9 @@ const streakSchema = mongoose.Schema({
         type: String
     },
     options: [String],
-    answer: String
+    answer: {
+        type: String
+    }
 });
 
 const StreakModel = mongoose.model('StreakModel', streakSchema);

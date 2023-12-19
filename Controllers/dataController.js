@@ -245,10 +245,7 @@ function dataController() {
         },
 
         addStreakData: async (req, res) => {
-            const obj = {};
-            if (req.body.txtmcq) {
-                obj.txtmcq = req.body.txtmcq;
-            }
+            const obj = req.body;
             try {
                 const saved = await StreakModel.create(obj);
                 return res.status(200).json({ msg: 'Streak Data Added Successfully' });
@@ -261,7 +258,11 @@ function dataController() {
         getStreakData: async (req, res) => {
             try {
                 const data = await StreakModel.findOne();
-                return res.status(200).json({ data });
+                const response = {};
+                response.quest = data.quest;
+                response.options = data.options;
+                response.answer = data.answer;
+                return res.status(200).json({ response });
             } catch (error) {
                 console.error('Error while fetching streak data:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
