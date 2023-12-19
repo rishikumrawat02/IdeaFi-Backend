@@ -13,6 +13,7 @@ function initRoutes(app) {
     app.post('/ideafibackend/data/addData/:section', dataController().addLevelData);
 
     // Get level data
+    app.get('/ideafibackend/data/getData/ipr/:level', dataController().getIPRData);
     app.get('/ideafibackend/data/getData/patent/:level', dataController().getPatentData);
     app.get('/ideafibackend/data/getData/trademark/:level', dataController().getTradeMarkData);
     app.get('/ideafibackend/data/getData/copyright/:level', dataController().getCopyrightData);

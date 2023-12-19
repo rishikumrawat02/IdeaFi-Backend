@@ -123,6 +123,48 @@ function dataController() {
             }
         },
 
+        getIPRData: async (req, res) => {
+            try {
+                const lvl = req.params.level;
+                const data = await IPModel.findOne();
+
+                if (!data || data.length === 0 || !data.levels || data.levels.length < lvl || lvl == 0) {
+                    return res.status(404).json({ msg: 'No data found' });
+                }
+
+                let response = {};
+                response.title = data.levels[lvl - 1].title;
+                response.maxScore = data.levels[lvl - 1].maxScore;
+                response.content = [];
+
+                for (let cont of data.levels[lvl - 1].content) {
+                    const obj = {};
+                    if (cont.para != null && cont.imgLink != null) {
+                        obj.type = 'paraImg';
+                        obj.para = cont.para;
+                        obj.imgLink = cont.imgLink;
+                    } else if (cont.para != null) {
+                        obj.type = 'para';
+                        obj.para = cont.para;
+                    } else if (cont.trueFalse.quest) {
+                        obj.type = 'trueFalse';
+                        obj.trueFalse = cont.trueFalse;
+                    } else if (cont.txtmcq.quest) {
+                        obj.type = 'textMcq';
+                        obj.txtmcq = cont.txtmcq;
+                    } else {
+                        obj.type = 'imgMcq';
+                        obj.imgmcq = cont.imgmcq;
+                    }
+                    response.content.push(obj);
+                }
+
+                return res.status(200).json({ level: response });
+            } catch (error) {
+                console.error('Error while retrieving trademarkData:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
+        },
 
         getPatentData: async (req, res) => {
             try {
@@ -139,29 +181,30 @@ function dataController() {
                 response.content = [];
 
                 for (let cont of data.levels[lvl - 1].content) {
-                    if (cont.para != null) {
-                        response.content.push(cont.para);
+                    const obj = {};
+                    if (cont.para != null && cont.imgLink != null) {
+                        obj.type = 'paraImg';
+                        obj.para = cont.para;
+                        obj.imgLink = cont.imgLink;
+                    } else if (cont.para != null) {
+                        obj.type = 'para';
+                        obj.para = cont.para;
+                    } else if (cont.trueFalse.quest) {
+                        obj.type = 'trueFalse';
+                        obj.trueFalse = cont.trueFalse;
+                    } else if (cont.txtmcq.quest) {
+                        obj.type = 'textMcq';
+                        obj.txtmcq = cont.txtmcq;
+                    } else {
+                        obj.type = 'imgMcq';
+                        obj.imgmcq = cont.imgmcq;
                     }
-                    if (cont.imgLink != null) {
-                        response.content.push(cont.imgLink);
-                    }
-                    if (cont.link != null) {
-                        response.content.push(cont.link);
-                    }
-                    if (cont.trueFalse) {
-                        response.cont.push(trueFalse);
-                    }
-                    if (cont.txtmcq.quest) {
-                        response.cont.push(cont.txtmcq);
-                    }
-                    if (cont.imgmcq.questLink) {
-                        response.cont.push(cont.imgmcq);
-                    }
+                    response.content.push(obj);
                 }
 
                 return res.status(200).json({ level: response });
             } catch (error) {
-                console.error('Error while retrieving patentData:', error);
+                console.error('Error while retrieving trademarkData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
         },
@@ -192,10 +235,13 @@ function dataController() {
                         obj.para = cont.para;
                     } else if (cont.trueFalse.quest) {
                         obj.type = 'trueFalse';
-                        obj.tF.trueFalse = cont.trueFalse;
-                    } else {
+                        obj.trueFalse = cont.trueFalse;
+                    } else if (cont.txtmcq.quest) {
                         obj.type = 'textMcq';
-                        obj.tM.txtmcq = cont.txtmcq;
+                        obj.txtmcq = cont.txtmcq;
+                    } else {
+                        obj.type = 'imgMcq';
+                        obj.imgmcq = cont.imgmcq;
                     }
                     response.content.push(obj);
                 }
@@ -211,15 +257,42 @@ function dataController() {
         getCopyrightData: async (req, res) => {
             try {
                 const lvl = req.params.level;
-                const data = await CopyRightModel.find();
+                const data = await CopyRightModel.findOne();
 
                 if (!data || data.length === 0 || !data.levels || data.levels.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ level: data.levels[lvl - 1] });
+                let response = {};
+                response.title = data.levels[lvl - 1].title;
+                response.maxScore = data.levels[lvl - 1].maxScore;
+                response.content = [];
+
+                for (let cont of data.levels[lvl - 1].content) {
+                    const obj = {};
+                    if (cont.para != null && cont.imgLink != null) {
+                        obj.type = 'paraImg';
+                        obj.para = cont.para;
+                        obj.imgLink = cont.imgLink;
+                    } else if (cont.para != null) {
+                        obj.type = 'para';
+                        obj.para = cont.para;
+                    } else if (cont.trueFalse.quest) {
+                        obj.type = 'trueFalse';
+                        obj.trueFalse = cont.trueFalse;
+                    } else if (cont.txtmcq.quest) {
+                        obj.type = 'textMcq';
+                        obj.txtmcq = cont.txtmcq;
+                    } else {
+                        obj.type = 'imgMcq';
+                        obj.imgmcq = cont.imgmcq;
+                    }
+                    response.content.push(obj);
+                }
+
+                return res.status(200).json({ level: response });
             } catch (error) {
-                console.error('Error while retrieving copyrightData:', error);
+                console.error('Error while retrieving trademarkData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
         },
@@ -228,15 +301,42 @@ function dataController() {
         getDesignData: async (req, res) => {
             try {
                 const lvl = req.params.level;
-                const data = await DesignModel.find();
+                const data = await DesignModel.findOne();
 
                 if (!data || data.length === 0 || !data.levels || data.levels.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ level: data.levels[lvl - 1] });
+                let response = {};
+                response.title = data.levels[lvl - 1].title;
+                response.maxScore = data.levels[lvl - 1].maxScore;
+                response.content = [];
+
+                for (let cont of data.levels[lvl - 1].content) {
+                    const obj = {};
+                    if (cont.para != null && cont.imgLink != null) {
+                        obj.type = 'paraImg';
+                        obj.para = cont.para;
+                        obj.imgLink = cont.imgLink;
+                    } else if (cont.para != null) {
+                        obj.type = 'para';
+                        obj.para = cont.para;
+                    } else if (cont.trueFalse.quest) {
+                        obj.type = 'trueFalse';
+                        obj.trueFalse = cont.trueFalse;
+                    } else if (cont.txtmcq.quest) {
+                        obj.type = 'textMcq';
+                        obj.txtmcq = cont.txtmcq;
+                    } else {
+                        obj.type = 'imgMcq';
+                        obj.imgmcq = cont.imgmcq;
+                    }
+                    response.content.push(obj);
+                }
+
+                return res.status(200).json({ level: response });
             } catch (error) {
-                console.error('Error while retrieving designData:', error);
+                console.error('Error while retrieving trademarkData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
         },

@@ -18,10 +18,6 @@ const ipSchema = mongoose.Schema({
                 type: String,
                 default: null
             },
-            link: {
-                type: String,
-                default: null
-            },
             trueFalse: {
                 quest: {
                     type: String
@@ -39,7 +35,7 @@ const ipSchema = mongoose.Schema({
                     type: String
                 },
                 options: [String],
-                answer: [String],
+                answer: Number,
                 points: {
                     type: Number
                 },
@@ -49,7 +45,7 @@ const ipSchema = mongoose.Schema({
                     type: String,
                 },
                 optionsLink: [String],
-                answerLink: [String],
+                answerLink: Number,
                 points: {
                     type: Number
                 }
