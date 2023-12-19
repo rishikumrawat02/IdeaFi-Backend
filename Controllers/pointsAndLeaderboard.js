@@ -34,7 +34,15 @@ function pointsAndLeaderBoardController() {
                 {
                     $group: {
                         _id: "$userId",
-                        totalPoints: { $sum: "$pointsDetail.points" },
+                        totalPoints: {
+                            $sum: {
+                                $cond: {
+                                    if: { $gte: ["$pointsDetail.dateModified", new Date(year, month, day)] },
+                                    then: "$pointsDetail.points",
+                                    else: 0
+                                }
+                            }
+                        }
                     }
                 },
                 {
