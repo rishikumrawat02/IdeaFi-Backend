@@ -48,7 +48,7 @@ function initRoutes(app) {
     app.get('/ideafibackend/user/getCertificate', pointsController().getCertificate);
 
     // Module Progress
-    app.get('/ideafibackend/user/userModuleProgress', userController().getUserModuleProgress);
+    app.get('/ideafibackend/user/getUserModuleProgress', userController().getUserModuleProgress);
 }
 
 module.exports = initRoutes;
