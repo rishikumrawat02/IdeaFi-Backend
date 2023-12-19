@@ -3,7 +3,7 @@ const TradeMarkModel = require('../Models/trademark');
 const CopyRightModel = require('../Models/copyright');
 const DesignModel = require('../Models/design');
 const IPModel = require('../Models/basicIP');
-const { save } = require('pdfkit');
+const StreakModel = require('../Models/streakModel');
 
 function dataController() {
     return {
@@ -20,11 +20,11 @@ function dataController() {
                 let newObj = {
                     para: cont.para || null,
                     imgLink: cont.imgLink || null,
-                    link: cont.link || null                    
+                    link: cont.link || null
                 };
 
                 // Adding True-False
-                if (cont.trueFalse) {                    
+                if (cont.trueFalse) {
                     newObj.trueFalse = {
                         quest: cont.trueFalse.quest,
                         ans: cont.trueFalse.ans,
@@ -64,7 +64,7 @@ function dataController() {
                 let savedObj;
 
                 switch (section) {
-                    case 'BasicIp': 
+                    case 'BasicIp':
                         savedObj = await IPModel.findOne();
                         break;
                     case "Trademark":
@@ -127,13 +127,39 @@ function dataController() {
         getPatentData: async (req, res) => {
             try {
                 const lvl = req.params.level;
-                const data = await PatentModel.find();
+                const data = await PatentModel.findOne();
 
-                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
+                if (!data || data.length === 0 || !data.levels || data.levels.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ level: data[lvl - 1].levels });
+                let response = {};
+                response.title = data.levels[lvl - 1].title;
+                response.maxScore = data.levels[lvl - 1].maxScore;
+                response.content = [];
+
+                for (let cont of data.levels[lvl - 1].content) {
+                    if (cont.para != null) {
+                        response.content.push(cont.para);
+                    }
+                    if (cont.imgLink != null) {
+                        response.content.push(cont.imgLink);
+                    }
+                    if (cont.link != null) {
+                        response.content.push(cont.link);
+                    }
+                    if (cont.trueFalse) {
+                        response.cont.push(trueFalse);
+                    }
+                    if (cont.txtmcq.quest) {
+                        response.cont.push(cont.txtmcq);
+                    }
+                    if (cont.imgmcq.questLink) {
+                        response.cont.push(cont.imgmcq);
+                    }
+                }
+
+                return res.status(200).json({ level: response });
             } catch (error) {
                 console.error('Error while retrieving patentData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -144,13 +170,40 @@ function dataController() {
         getTradeMarkData: async (req, res) => {
             try {
                 const lvl = req.params.level;
-                const data = await TradeMarkModel.find();
+                const data = await TradeMarkModel.findOne();
 
-                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
+                if (!data || data.length === 0 || !data.levels || data.levels.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ level: data[lvl - 1].levels });
+                let response = {};
+                response.title = data.levels[lvl - 1].title;
+                response.maxScore = data.levels[lvl - 1].maxScore;
+                response.content = [];
+
+                for (let cont of data.levels[lvl - 1].content) {
+                    const obj = {};
+                    if (cont.para != null) {
+                        obj.para = cont.para;
+                    }
+                    if (cont.imgLink != null) {
+                        obj.imgLink = cont.imgLink;
+                    }
+                    if (cont.link != null) {
+                        obj.link = cont.link;
+                    }
+                    if (cont.trueFalse.quest) {
+                        obj.trueFalse = cont.trueFalse;
+                    }
+                    if (cont.txtmcq.quest) {
+                        obj.txtmcq = cont.txtmcq;
+                    }
+                    if (cont.imgmcq.questLink) {
+                        obj.imgmcq = cont.imgmcq;
+                    }
+                    response.content.push(obj);
+                }
+                return res.status(200).json({ level: response });
             } catch (error) {
                 console.error('Error while retrieving trademarkData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -163,11 +216,11 @@ function dataController() {
                 const lvl = req.params.level;
                 const data = await CopyRightModel.find();
 
-                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
+                if (!data || data.length === 0 || !data.levels || data.levels.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ level: data[lvl - 1].levels });
+                return res.status(200).json({ level: data.levels[lvl - 1] });
             } catch (error) {
                 console.error('Error while retrieving copyrightData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -180,17 +233,43 @@ function dataController() {
                 const lvl = req.params.level;
                 const data = await DesignModel.find();
 
-                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
+                if (!data || data.length === 0 || !data.levels || data.levels.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ level: data[lvl - 1].levels });
+                return res.status(200).json({ level: data.levels[lvl - 1] });
             } catch (error) {
                 console.error('Error while retrieving designData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
-        }
+        },
 
+        addStreakData: async (req, res) => {
+            const obj = {};
+            if (req.body.trueFalse) {
+                obj.trueFalse = req.body.trueFalse;
+            }
+            if (req.body.txtmcq) {
+                obj.txtmcq = req.body.txtmcq;
+            }
+            try {
+                const saved = await StreakModel.create(obj);
+                return res.status(200).json({ msg: 'Streak Data Added Successfully' });
+            } catch (error) {
+                console.error('Error while adding streak data:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
+        },
+
+        getStreakData: async (req, res) => {
+            try {
+                const data = await StreakModel.findOne();
+                return res.status(200).json({ data });
+            } catch (error) {
+                console.error('Error while fetching streak data:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
+        }
     }
 }
 
