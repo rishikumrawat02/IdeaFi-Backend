@@ -67,11 +67,11 @@ function dataController() {
                     case 'ipr':
                         savedObj = await IPModel.findOne();
                         break;
-                    case "Trademark":
-                        savedObj = await TradeMarkModel.findOne();
-                        break;
                     case "Patent":
                         savedObj = await PatentModel.findOne();
+                        break;
+                    case "Trademark":
+                        savedObj = await TradeMarkModel.findOne();
                         break;
                     case "Design":
                         savedObj = await DesignModel.findOne();
