@@ -60,12 +60,33 @@ function userController() {
                 console.error('Error while geting userInfo:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
             }
+        },
 
+        getUserModuleProgress: async (req, res) => {
+            const userId = req.body.userId;
+            try {
+                const user = await User.findOne({ userId: userId });
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
+                const userProgress = await UserProgress.findOne({ userId: user._id });
+                const response = {
+                    ipInfo: userProgress.ipInfo.levels,
+                    patentInfo: userProgress.patentInfo.levels,
+                    trademarkInfo: userProgress.trademarkInfo.levels,
+                    copyrightInfo: userProgress.copyrightInfo.levels,
+                    designInfo: userProgress.designInfo.levels
+                };
+                return res.status(200).json({ response });
+            } catch (error) {
+                console.error('Error while fetching usermodule progress:', error);
+                return res.status(500).json({ msg: 'Internal Server Error' });
+            }
         },
 
         getUserProgress: async (req, res) => {
             const userId = req.body.userId;
-            
+
             try {
                 const user = await User.findOne({ userId: userId });
                 if (!user) {
@@ -122,15 +143,5 @@ async function createLevel(model) {
         return;
     }
 }
-
-async function done(){
-    const id = new mongoose.Types.ObjectId('6580132b1e46a4600438bace');
-    let userProgress = await UserProgress.findOne({userId: id });
-    userProgress.ipInfo = { levels: await createLevel(IPModel) };
-    await userProgress.save();
-    console.log("Done");
-}
-
-done();
 
 module.exports = userController;
