@@ -64,7 +64,7 @@ function dataController() {
                 let savedObj;
 
                 switch (section) {
-                    case 'BasicIp':
+                    case 'ipr':
                         savedObj = await IPModel.findOne();
                         break;
                     case "Trademark":
@@ -183,26 +183,23 @@ function dataController() {
 
                 for (let cont of data.levels[lvl - 1].content) {
                     const obj = {};
-                    if (cont.para != null) {
+                    if (cont.para != null && cont.imgLink != null) {
+                        obj.type = 'paraImg';
                         obj.para = cont.para;
-                    }
-                    if (cont.imgLink != null) {
                         obj.imgLink = cont.imgLink;
-                    }
-                    if (cont.link != null) {
-                        obj.link = cont.link;
-                    }
-                    if (cont.trueFalse.quest) {
-                        obj.trueFalse = cont.trueFalse;
-                    }
-                    if (cont.txtmcq.quest) {
-                        obj.txtmcq = cont.txtmcq;
-                    }
-                    if (cont.imgmcq.questLink) {
-                        obj.imgmcq = cont.imgmcq;
+                    } else if (cont.para != null) {
+                        obj.type = 'para';
+                        obj.para = cont.para;
+                    } else if (cont.trueFalse.quest) {
+                        obj.type = 'trueFalse';
+                        obj.tF.trueFalse = cont.trueFalse;
+                    } else {
+                        obj.type = 'textMcq';
+                        obj.tM.txtmcq = cont.txtmcq;
                     }
                     response.content.push(obj);
                 }
+
                 return res.status(200).json({ level: response });
             } catch (error) {
                 console.error('Error while retrieving trademarkData:', error);
