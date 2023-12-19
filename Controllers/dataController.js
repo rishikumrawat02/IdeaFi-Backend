@@ -2,6 +2,8 @@ const PatentModel = require('../Models/patent');
 const TradeMarkModel = require('../Models/trademark');
 const CopyRightModel = require('../Models/copyright');
 const DesignModel = require('../Models/design');
+const IPModel = require('../Models/basicIP');
+const { save } = require('pdfkit');
 
 function dataController() {
     return {
@@ -62,6 +64,9 @@ function dataController() {
                 let savedObj;
 
                 switch (section) {
+                    case 'BasicIp': 
+                        savedObj = await IPModel.findOne();
+                        break;
                     case "Trademark":
                         savedObj = await TradeMarkModel.findOne();
                         break;
@@ -104,12 +109,12 @@ function dataController() {
                 const copyRightData = await CopyRightModel.findOne();
                 const designData = await DesignModel.findOne();
 
-                const response = {                     
+                const response = {
                     patentLevelInfo: mapLevelData(patentData),
                     tradeLevelInfo: mapLevelData(tradeMarkData),
                     copyLevelInfo: mapLevelData(copyRightData),
                     designLevelInfo: mapLevelData(designData)
-                };      
+                };
 
                 return res.status(200).json({ data: response });
             } catch (error) {
@@ -124,11 +129,11 @@ function dataController() {
                 const lvl = req.params.level;
                 const data = await PatentModel.find();
 
-                if (!data || data.length === 0 || data.length<lvl || lvl==0) {
+                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl-1] });
+                return res.status(200).json({ data: data[lvl - 1] });
             } catch (error) {
                 console.error('Error while retrieving patentData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -141,11 +146,11 @@ function dataController() {
                 const lvl = req.params.level;
                 const data = await TradeMarkModel.find();
 
-                if (!data || data.length === 0 || data.length<lvl || lvl==0) {
+                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl-1] });
+                return res.status(200).json({ data: data[lvl - 1] });
             } catch (error) {
                 console.error('Error while retrieving trademarkData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -158,11 +163,11 @@ function dataController() {
                 const lvl = req.params.level;
                 const data = await CopyRightModel.find();
 
-                if (!data || data.length === 0 || data.length<lvl || lvl==0) {
+                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl-1] });
+                return res.status(200).json({ data: data[lvl - 1] });
             } catch (error) {
                 console.error('Error while retrieving copyrightData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -175,11 +180,11 @@ function dataController() {
                 const lvl = req.params.level;
                 const data = await DesignModel.find();
 
-                if (!data || data.length === 0 || data.length<lvl || lvl==0) {
+                if (!data || data.length === 0 || data.length < lvl || lvl == 0) {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl-1] });
+                return res.status(200).json({ data: data[lvl - 1] });
             } catch (error) {
                 console.error('Error while retrieving designData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });

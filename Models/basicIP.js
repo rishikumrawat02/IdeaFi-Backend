@@ -30,9 +30,9 @@ const ipSchema = mongoose.Schema({
                     },
                     ans: {
                         type: String,
-                        enum: ["True","False"]
+                        enum: ["True", "False"]
                     },
-                    points:{
+                    points: {
                         type: Number,
                         required: true
                     }
@@ -46,7 +46,7 @@ const ipSchema = mongoose.Schema({
                     },
                     options: [String],
                     answer: [String],
-                    points:{
+                    points: {
                         type: Number,
                         required: true
                     }
@@ -60,7 +60,7 @@ const ipSchema = mongoose.Schema({
                     },
                     optionsLink: [String],
                     answerLink: [String],
-                    points:{
+                    points: {
                         type: Number,
                         required: true
                     }
@@ -71,5 +71,5 @@ const ipSchema = mongoose.Schema({
     }]
 });
 
-const IPModel = mongoose.model('IPModel',ipSchema);
+const IPModel = mongoose.model('IPModel', ipSchema);
 module.exports = IPModel;
