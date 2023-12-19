@@ -22,51 +22,38 @@ const trademarkSchema = mongoose.Schema({
                 type: String,
                 default: null
             },
-            trueFalse: [
-                {
-                    quest: {
-                        type: String,
-                        required: true
-                    },
-                    ans: {
-                        type: String,
-                        enum: ["True","False"]
-                    },
-                    points:{
-                        type: Number,
-                        required: true
-                    }
+            trueFalse: {
+                quest: {
+                    type: String
+                },
+                ans: {
+                    type: String,
+                    enum: ["True", "False"]
+                },
+                points: {
+                    type: Number
                 }
-            ],
-            txtmcq: [
-                {
-                    quest: {
-                        type: String,
-                        required: true,
-                    },
-                    options: [String],
-                    answer: [String],
-                    points:{
-                        type: Number,
-                        required: true
-                    }
+            },
+            txtmcq: {
+                quest: {
+                    type: String
+                },
+                options: [String],
+                answer: [String],
+                points: {
+                    type: Number
                 }
-            ],
-            imgmcq: [
-                {
-                    questLink: {
-                        type: String,
-                        required: true,
-                    },
-                    optionsLink: [String],
-                    answerLink: [String],
-                    points:{
-                        type: Number,
-                        required: true
-                    }
+            },
+            imgmcq: {
+                questLink: {
+                    type: String
+                },
+                optionsLink: [String],
+                answerLink: [String],
+                points: {
+                    type: Number
                 }
-            ]
-
+            }
         }]
     }]
 });

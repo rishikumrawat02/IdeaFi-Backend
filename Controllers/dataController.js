@@ -20,39 +20,39 @@ function dataController() {
                 let newObj = {
                     para: cont.para || null,
                     imgLink: cont.imgLink || null,
-                    link: cont.link || null
+                    link: cont.link || null                    
                 };
 
-                // Adding true-false question
-                if (cont.trueFalse) {
-                    newObj.trueFalse = cont.trueFalse.map(tF => ({
-                        quest: tF.quest,
-                        ans: tF.ans,
-                        points: tF.points
-                    }));
-                    maxScore += newObj.trueFalse.reduce((acc, tF) => acc + Number(tF.points), 0);
+                // Adding True-False
+                if (cont.trueFalse) {                    
+                    newObj.trueFalse = {
+                        quest: cont.trueFalse.quest,
+                        ans: cont.trueFalse.ans,
+                        points: cont.trueFalse.points
+                    };
+                    maxScore += cont.trueFalse.points;
                 }
 
                 // Adding Text-MCQ question
                 if (cont.txtmcq) {
-                    newObj.txtmcq = cont.txtmcq.map(tM => ({
-                        quest: tM.quest,
-                        options: tM.options,
-                        answer: tM.answer,
-                        points: tM.points
-                    }));
-                    maxScore += newObj.txtmcq.reduce((acc, tM) => acc + Number(tM.points), 0);
+                    newObj.txtmcq = {
+                        quest: cont.txtmcq.quest,
+                        options: cont.txtmcq.options,
+                        answer: cont.txtmcq.answer,
+                        points: cont.txtmcq.points
+                    };
+                    maxScore += cont.txtmcq.points;
                 }
 
                 // Addimg Img-MCQ question
                 if (cont.imgmcq) {
-                    newObj.imgmcq = cont.imgmcq.map(IM => ({
-                        questLink: IM.questLink,
-                        optionsLink: IM.optionsLink,
-                        answerLink: IM.answerLink,
-                        points: IM.points
-                    }));
-                    maxScore += newObj.imgmcq.reduce((acc, IM) => acc + Number(IM.points), 0);
+                    newObj.imgmcq = {
+                        questLink: cont.imgmcq.questLink,
+                        optionsLink: cont.imgmcq.optionsLink,
+                        answerLink: cont.imgmcq.answerLink,
+                        points: cont.imgmcq.points
+                    };
+                    maxScore += cont.imgmcq.points;
                 }
 
                 newObject.content.push(newObj);
@@ -133,7 +133,7 @@ function dataController() {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl - 1] });
+                return res.status(200).json({ level: data[lvl - 1].levels });
             } catch (error) {
                 console.error('Error while retrieving patentData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -150,7 +150,7 @@ function dataController() {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl - 1] });
+                return res.status(200).json({ level: data[lvl - 1].levels });
             } catch (error) {
                 console.error('Error while retrieving trademarkData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -167,7 +167,7 @@ function dataController() {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl - 1] });
+                return res.status(200).json({ level: data[lvl - 1].levels });
             } catch (error) {
                 console.error('Error while retrieving copyrightData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
@@ -184,7 +184,7 @@ function dataController() {
                     return res.status(404).json({ msg: 'No data found' });
                 }
 
-                return res.status(200).json({ data: data[lvl - 1] });
+                return res.status(200).json({ level: data[lvl - 1].levels });
             } catch (error) {
                 console.error('Error while retrieving designData:', error);
                 return res.status(500).json({ msg: 'Internal Server Error' });
