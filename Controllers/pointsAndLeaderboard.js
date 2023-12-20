@@ -271,6 +271,9 @@ function pointsAndLeaderBoardController() {
 
             try {
                 const user = await User.findOne({ email: email });
+                if (!user) {
+                    return res.status(404).json({ msg: 'Invalid User Id' });
+                }
 
                 const response = {
                     userName: user.userName,
@@ -282,20 +285,24 @@ function pointsAndLeaderBoardController() {
                 // Daily Rank
                 aggregate = getAggregate('D');
                 userPointsData = await UserProgress.aggregate(aggregate);
+
                 userIndex = findUserIndex(userPointsData, user.userId);
                 response.dailyRank = userIndex + 1;
+                response.dailyPoint = (userIndex != -1) ? userPointsData[userIndex].totalPoints : 0;
 
                 // Weekly Rank
                 aggregate = getAggregate('W');
                 userPointsData = await UserProgress.aggregate(aggregate);
                 userIndex = findUserIndex(userPointsData, user.userId);
                 response.weeklyRank = userIndex + 1;
+                response.weeklyPoint = (userIndex != -1) ? userPointsData[userIndex].totalPoints : 0;
 
                 // Monthly Rank
                 aggregate = getAggregate('M');
                 userPointsData = await UserProgress.aggregate(aggregate);
                 userIndex = findUserIndex(userPointsData, user.userId);
                 response.monthlyRank = userIndex + 1;
+                response.monthlyPoint = (userIndex != -1) ? userPointsData[userIndex].totalPoints : 0;
 
                 return res.status(200).json({ response });
 
@@ -445,7 +452,6 @@ function getAggregate(rankBasis) {
 
 const findUserIndex = (userPointsData, userId) => {
     for (let i = 0; i < userPointsData.length; i++) {
-        console.log(userPointsData[i].userId);
         if (userPointsData[i].userId[0] === userId) {
             return i;
         }
