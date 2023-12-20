@@ -106,6 +106,13 @@ function pointsAndLeaderBoardController() {
                 let sectn = null;
 
                 switch (section) {
+                    case "IPR":
+                        if (userProgressData.ipInfo.levels.length < lvl || lvl <= 0) {
+                            return res.status(400).json({ msg: 'Invalid Level' });
+                        }
+                        userProgressData.ipInfo.levels[lvl - 1].status = "Completed";
+                        userProgressData.ipInfo.levels[lvl - 1].pointsEarned = points;
+                        break;
                     case "Patent":
                         if (userProgressData.patentInfo.levels.length < lvl || lvl <= 0) {
                             return res.status(400).json({ msg: 'Invalid Level' });
