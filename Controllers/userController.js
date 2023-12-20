@@ -128,7 +128,7 @@ function userController() {
                 currentDate.setHours(0, 0, 0, 0);
 
                 // Get the last modified date without the time
-                const lastModifiedDate = new Date(streakInfo.lastModified);
+                const lastModifiedDate = new Date(data.lastModified);
                 lastModifiedDate.setHours(0, 0, 0, 0);
 
                 // Compare the dates
