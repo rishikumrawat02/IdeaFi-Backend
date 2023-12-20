@@ -55,6 +55,9 @@ function initRoutes(app) {
     app.get('/ideafibackend/user/getStreakInfo', userController().getStreakInfo);
     app.post('/ideafibackend/addData/streakData', dataController().addStreakData);
     app.get('/ideafibackend/getData/streakData', dataController().getStreakData);
+
+    // Search User and Its Rank
+    app.get('/ideafibackend/user/rank/getSpecificUserRank',pointsController().getSpecificUserRank);
 }
 
 module.exports = initRoutes;

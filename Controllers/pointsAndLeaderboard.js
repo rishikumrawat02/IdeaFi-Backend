@@ -1,4 +1,4 @@
-const { default: mongoose } = require('mongoose');
+const { default: mongoose, get } = require('mongoose');
 const [User, UserProgress] = require('../Models/user');
 const generatePDF = require('./pdfLogic');
 const pdfModel = require('../Models/pdfModel');
@@ -11,61 +11,7 @@ function pointsAndLeaderBoardController() {
 
             const rankBasis = req.body.rankBasis;
 
-            const currentDate = new Date();
-            currentDate.setDate(currentDate.getDate() - 1);
-
-            if (rankBasis === 'W') {
-                currentDate.setDate(currentDate.getDate() - 7);
-            } else if (rankBasis == 'M') {
-                currentDate.setDate(currentDate.getDate() - 30);
-            }
-
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const day = currentDate.getDate();
-
-            const query = {
-                "pointsDetail.dateModified": { $gte: new Date(year, month, day) }
-            };
-
-            const aggregate = [
-                { $match: query },
-                { $unwind: "$pointsDetail" },
-                {
-                    $group: {
-                        _id: "$userId",
-                        totalPoints: {
-                            $sum: {
-                                $cond: {
-                                    if: { $gte: ["$pointsDetail.dateModified", new Date(year, month, day)] },
-                                    then: "$pointsDetail.points",
-                                    else: 0
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    $sort: { totalPoints: -1 }
-                },
-                {
-                    $lookup: {
-                        from: "users", // Assuming your User model is in the "users" collection
-                        localField: "_id", // The field from the current collection
-                        foreignField: "_id", // The field from the "users" collection
-                        as: "user"
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        userId: "$user.userId",
-                        totalPoints: 1,
-                        userName: "$user.userName" // Replace "userName" with the actual field in your User model
-                    }
-                }
-            ];
-
+            const aggregate = getAggregate(rankBasis);
 
             try {
                 let userPointsData = await UserProgress.aggregate(aggregate);
@@ -320,6 +266,45 @@ function pointsAndLeaderBoardController() {
             }
         },
 
+        getSpecificUserRank: async (req, res) => {
+            const email = req.body.email;
+
+            try {
+                const user = await User.findOne({ email: email });
+
+                const response = {
+                    userName: user.userName,
+                    userId: user.userId,
+                };
+
+                let aggregate, userPointsData, userIndex;
+
+                // Daily Rank
+                aggregate = getAggregate('D');
+                userPointsData = await UserProgress.aggregate(aggregate);
+                userIndex = findUserIndex(userPointsData, user.userId);
+                response.dailyRank = userIndex + 1;
+
+                // Weekly Rank
+                aggregate = getAggregate('W');
+                userPointsData = await UserProgress.aggregate(aggregate);
+                userIndex = findUserIndex(userPointsData, user.userId);
+                response.weeklyRank = userIndex + 1;
+
+                // Monthly Rank
+                aggregate = getAggregate('M');
+                userPointsData = await UserProgress.aggregate(aggregate);
+                userIndex = findUserIndex(userPointsData, user.userId);
+                response.monthlyRank = userIndex + 1;
+
+                return res.status(200).json({ response });
+
+            } catch (error) {
+                console.error('Error while fetching searching specific user rank', error);
+                return res.status(500).json({ error: error.message });
+            }
+        },
+
         certificationComplete: async (req, res) => {
             const userId = req.body.userId;
 
@@ -398,6 +383,74 @@ const areDatesEqual = (date1, date2) => {
     const isSameDay = date1.getDate() === date2.getDate();
 
     return isSameYear && isSameMonth && isSameDay;
+};
+
+function getAggregate(rankBasis) {
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - 1);
+
+    if (rankBasis === 'W') {
+        currentDate.setDate(currentDate.getDate() - 7);
+    } else if (rankBasis == 'M') {
+        currentDate.setDate(currentDate.getDate() - 30);
+    }
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const day = currentDate.getDate();
+
+    const query = {
+        "pointsDetail.dateModified": { $gte: new Date(year, month, day) }
+    };
+
+    const aggregate = [
+        { $match: query },
+        { $unwind: "$pointsDetail" },
+        {
+            $group: {
+                _id: "$userId",
+                totalPoints: {
+                    $sum: {
+                        $cond: {
+                            if: { $gte: ["$pointsDetail.dateModified", new Date(year, month, day)] },
+                            then: "$pointsDetail.points",
+                            else: 0
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $sort: { totalPoints: -1 }
+        },
+        {
+            $lookup: {
+                from: "users", // Assuming your User model is in the "users" collection
+                localField: "_id", // The field from the current collection
+                foreignField: "_id", // The field from the "users" collection
+                as: "user"
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                userId: "$user.userId",
+                totalPoints: 1,
+                userName: "$user.userName" // Replace "userName" with the actual field in your User model
+            }
+        }
+    ];
+    return aggregate;
+}
+
+const findUserIndex = (userPointsData, userId) => {
+    for (let i = 0; i < userPointsData.length; i++) {
+        console.log(userPointsData[i].userId);
+        if (userPointsData[i].userId[0] === userId) {
+            return i;
+        }
+    }
+    return -1;
 };
 
 module.exports = pointsAndLeaderBoardController;

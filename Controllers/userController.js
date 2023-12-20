@@ -133,6 +133,7 @@ function userController() {
 
                 // Compare the dates
                 if (lastModifiedDate.getTime() === currentDate.getTime()) {
+                    console.log("Rishabh");
                     streakInfo.isDone = true;
                 }
 
