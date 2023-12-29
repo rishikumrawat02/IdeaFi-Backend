@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const connString = `mongodb+srv://rishabhkumrawat02:Ideafi%4012345@idea-fi.4an7gor.mongodb.net/Idea-Fi?retryWrites=true&w=majority`;
+const connString = process.env.mongoURI;
 
 const dataConn = () => {
     try {
